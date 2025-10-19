@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mini Zing - Demo</title>
+    <link rel="stylesheet" href="css/music.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">miniZing</div>
+            <div class="search">
+                <!-- KHU VỰC TÌM KIẾM -->
+                <input id="searchInput" placeholder="Tìm bài hát, nghệ sĩ, album..." />
+            </div>
+            <div>
+                <!-- KHU VỰC NÚT ĐĂNG NHẬP / PROFILE -->
+                <button class="icon">Đăng nhập</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- LEFT: Playlist / danh sách -->
+            <aside class="sidebar" id="sidebarPlaylist">
+                <!-- CHÚ THÍCH: Đây là nơi chứa danh sách bài hát / playlist.
+             - Bạn có thể render danh sách bài hát từ database hoặc file JSON.
+             - Mỗi item nên có data-src (link tới file audio), data-cover (ảnh bìa), data-lyric (link/chuỗi lời).
+        -->
+                <h3>Playlist gợi ý</h3>
+
+                <!-- VD mẫu item; thay src, cover, lyric theo project của bạn -->
+                <div class="playlist-item" data-src="audio/song1.mp3" data-cover="images/cover1.jpg"
+                    data-lyric="lyrics/song1.txt" onclick="playFromList(this)">
+                    <img class="thumb" src="images/cover1.jpg" alt="cover" />
+                    <div class="meta">
+                        <div style="font-weight:600">Tên bài hát 1</div>
+                        <div style="font-size:12px;color:var(--muted)">Ca sĩ A</div>
+                    </div>
+                </div>
+
+                <div class="playlist-item" data-src="audio/song2.mp3" data-cover="images/cover2.jpg"
+                    data-lyric="lyrics/song2.txt" onclick="playFromList(this)">
+                    <img class="thumb" src="images/cover2.jpg" alt="cover" />
+                    <div class="meta">
+                        <div style="font-weight:600">Tên bài hát 2</div>
+                        <div style="font-size:12px;color:var(--muted)">Ca sĩ B</div>
+                    </div>
+                </div>
+
+                <!-- Ghi chú: Thêm nhiều .playlist-item ở đây theo mẫu -->
+            </aside>
+
+            <!-- CENTER: Player, thông tin bài hát, lyrics -->
+            <section class="content">
+                <div class="hero">
+                    <!-- KHU VỰC ẢNH BÌA BÀI HÁT -->
+                    <img id="mainCover" class="cover" src="images/cover1.jpg" alt="cover" />
+
+                    <div class="info">
+                        <!-- KHU VỰC THÔNG TIN BÀI HÁT -->
+                        <h2 id="songTitle">Tên bài hát 1</h2>
+                        <div id="songArtist" style="color:var(--muted);margin-top:6px">Ca sĩ A</div>
+
+                        <!-- KHU VỰC NÚT ĐIỀU KHIỂN (PLAY / PAUSE / NEXT) -->
+                        <div class="controls">
+                            <button class="btn" id="playBtn" onclick="togglePlay()">Play</button>
+                            <button class="icon" onclick="prevSong()">⟨</button>
+                            <button class="icon" onclick="nextSong()">⟩</button>
+                            <div style="margin-left:auto">
+                                <button class="icon" onclick="toggleShuffle()">Shuffle</button>
+                                <button class="icon" onclick="toggleRepeat()">Repeat</button>
+                            </div>
+                        </div>
+
+                        <!-- KHU VỰC THANH TIẾN TRÌNH (HIỂN THỊ VÀ ĐIỀU KHIỂN) -->
+                        <div style="margin-top:10px">
+                            <div class="progress" onclick="seek(event)" id="progressBar"><i id="progressFill"></i></div>
+                            <div style="display:flex;justify-content:space-between" class="time"><span
+                                    id="currentTime">0:00</span><span id="duration">0:00</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KHU VỰC LỜI BÀI HÁT -->
+                <div class="lyrics" id="lyricsBox">
+                    <!-- Thay bằng nội dung lời hoặc fetch file lyrics -->
+                    <strong>Lời bài hát</strong>
+                    <p id="lyricText" style="white-space:pre-wrap;color:var(--muted);">
+                        Đây là phần lời mẫu. Khi tải bài hát thật, bạn có thể load file lyric từ server và hiển thị vào
+                        đây.
+                    </p>
+                </div>
+
+                <!-- KHU VỰC DANH SÁCH PHÁT NGẮN Ở TRANG CHÍNH -->
+                <div style="margin-top:16px">
+                    <h4>Danh sách phát</h4>
+                    <div id="miniList">
+                        <!-- Tương tự sidebar nhưng có thể hiển thị khác -->
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- BOTTOM: Sticky player - luôn hiện -->
+    <div class="player" aria-label="audio player">
+        <img id="miniCover" class="mini-cover" src="images/cover1.jpg" alt="cover" />
+        <div class="title">
+            <div id="miniTitle" style="font-weight:600">Tên bài hát 1</div>
+            <div id="miniArtist" style="font-size:12px;color:var(--muted)">Ca sĩ A</div>
+            <div class="progress" style="margin:6px 0"><i id="miniProgress"></i></div>
+        </div>
+
+        <!-- KHU VỰC NÚT PHÁT NHẠC NGẮN -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div>
+                <button class="icon" onclick="prevSong()">⟨</button>
+                <button class="icon" id="playBtn2" onclick="togglePlay()">▶/❚❚</button>
+                <button class="icon" onclick="nextSong()">⟩</button>
+            </div>
+            <div class="time" id="miniTime">0:00 / 0:00</div>
+        </div>
+    </div>
+
+    <!-- HTML chỉ (vẫn dùng JS nhỏ để demo chức năng player) -->
+    <audio id="audio" preload="metadata">
+        <!-- CHÚ THÍCH: đây là thẻ audio HTML5. Bạn có thể thay src mặc định hoặc khi người dùng click 1 item sẽ set src. -->
+        <source src="audio/song1.mp3" type="audio/mpeg" />
+        Trình duyệt của bạn không hỗ trợ thẻ audio.
+    </audio>
+
+    <script src="js/music.js"></script>
+</body>
+
+</html>
